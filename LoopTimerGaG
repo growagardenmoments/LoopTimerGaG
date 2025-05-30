@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Looping Timer with Alarm</title>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      font-family: sans-serif;
+      background-color: #f4f4f4;
+      margin: 0;
+    }
+
+    h1 {
+      font-size: 2rem;
+      margin-bottom: 1rem;
+    }
+
+    #timer {
+      font-size: 5rem;
+      margin-bottom: 2rem;
+      color: #333;
+    }
+
+    #startMsg {
+      font-size: 1rem;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>Looping Timer with Alarm</h1>
+  <div id="timer">5</div>
+  <p id="startMsg">Click anywhere to start</p>
+
+  <audio id="alarm" src="alarm.mp3" preload="auto"></audio>
+
+  <script>
+    const timerDisplay = document.getElementById("timer");
+    const alarm = document.getElementById("alarm");
+    const startMsg = document.getElementById("startMsg");
+
+    let startTime = 5; // seconds (you can change this)
+    let currentTime = startTime;
+    let timerInterval = null;
+
+    function updateTimerDisplay() {
+      timerDisplay.textContent = currentTime;
+    }
+
+    function startTimerLoop() {
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        currentTime--;
+        updateTimerDisplay();
+
+        if (currentTime < 0) {
+          clearInterval(timerInterval);
+          playAlarmThenRestart();
+        }
+      }, 1000);
+    }
+
+    function playAlarmThenRestart() {
+      alarm.currentTime = 0;
+      alarm.play();
+
+      // Wait 6 seconds, then stop alarm and restart timer
+      setTimeout(() => {
+        alarm.pause();
+        alarm.currentTime = 0;
+        currentTime = startTime;
+        startTimerLoop();
+      }, 6000);
+    }
+
+    // Wait for user interaction to start (required for sound)
+    document.body.addEventListener("click", () => {
+      if (!timerInterval) {
+        startMsg.style.display = "none";
+        startTimerLoop();
+      }
+    });
+  </script>
+</body>
+</html>
